@@ -1,0 +1,42 @@
+{
+  "name": "storecraft-framework-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "StoreCraft Framework - Modern Next.js framework for Shopify headless storefronts",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev": "npm run dev --workspace=packages/storecraft-framework",
+    "clean": "rm -rf packages/*/dist packages/*/lib packages/*/.next",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces",
+    "release": "npm run build && npm publish --workspaces"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "nextjs",
+    "shopify",
+    "headless",
+    "ecommerce",
+    "react",
+    "typescript",
+    "storefront",
+    "framework",
+    "themes"
+  ],
+  "author": "StoreCraft Team",
+  "license": "MIT",
+  "homepage": "https://github.com/storecraft-framework/storecraft",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/storecraft-framework/storecraft.git"
+  },
+  "bugs": {
+    "url": "https://github.com/storecraft-framework/storecraft/issues"
+  }
+}

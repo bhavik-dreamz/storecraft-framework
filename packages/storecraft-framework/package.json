@@ -1,0 +1,78 @@
+{
+  "name": "storecraft-framework",
+  "version": "1.0.0",
+  "description": "Theme-based framework for building Shopify headless storefronts with Next.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./next-plugin": "./dist/next-plugin.js",
+    "./types": "./dist/types/index.d.ts",
+    "./providers": "./dist/providers/index.js",
+    "./components": "./dist/components/index.js",
+    "./lib": "./dist/lib/index.js"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --coverage --watchAll=false",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "shopify",
+    "headless",
+    "nextjs",
+    "ecommerce",
+    "framework",
+    "themes",
+    "react"
+  ],
+  "author": "StoreCraft Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/storecraft/storecraft-framework.git"
+  },
+  "bugs": {
+    "url": "https://github.com/storecraft/storecraft-framework/issues"
+  },
+  "homepage": "https://storecraft-framework.com",
+  "peerDependencies": {
+    "next": ">=13.0.0",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "graphql-request": "^7.0.0",
+    "tailwind-merge": "^2.0.0",
+    "zustand": "^4.4.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "eslint-config-next": "^14.0.0",
+    "jest": "^29.7.0",
+    "rollup": "^4.0.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.0.0"
+  }
+}
