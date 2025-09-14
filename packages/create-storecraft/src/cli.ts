@@ -77,15 +77,18 @@ program
   .option('--env <env>', 'Environment to deploy to')
   .action((options) => deployProject(options))
 
-// Handle create-storecraft direct usage
-if (process.argv[1].includes('create-storecraft')) {
+// Handle create-storecraft direct usage (only when called as create-storecraft with no subcommands)
+if (process.argv[1].includes('create-storecraft') && process.argv.length <= 3) {
   const projectName = process.argv[2]
   if (projectName && !projectName.startsWith('-')) {
+    // When called as create-storecraft with project name, treat it as create command
     createProject(projectName, { template: 'default', yes: false, theme: 'default' })
   } else {
-    program.parse()
+    // No project name provided, show help or run interactive create
+    createProject(undefined, { template: 'default', yes: false, theme: 'default' })
   }
 } else {
+  // Normal command parsing for storecraft command or create-storecraft with subcommands
   program.parse()
 }
 
