@@ -1,12 +1,12 @@
 {
-  "name": "create-myshop",
+  "name": "create-storecraft",
   "version": "1.0.0",
   "description": "CLI tool for creating and managing StoreCraft-powered e-commerce applications",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "create-myshop": "dist/cli.js",
-    "myshop": "dist/cli.js"
+    "create-storecraft": "dist/cli.js",
+    "storecraft": "dist/cli.js"
   },
   "files": [
     "dist",

@@ -18,7 +18,7 @@
 This monorepo contains two main packages:
 
 - **`storecraft-framework`** - Core framework with providers, components, and integrations
-- **`create-myshop`** - CLI tool for project scaffolding and theme management
+- **`create-storecraft`** - CLI tool for project scaffolding and theme management
 
 ## ✅ Chapter 1 Implementation Status
 
@@ -75,7 +75,7 @@ your-project/
 ### 1. Create a New Project
 
 ```bash
-npx create-myshop@latest my-store
+npx create-storecraft@latest my-store
 cd my-store
 ```
 
@@ -103,40 +103,40 @@ Your store will be available at `http://localhost:3000`
 ### List Available Themes
 
 ```bash
-myshop theme list
+storecraft theme list
 ```
 
 ### Switch Themes
 
 ```bash
-myshop theme switch modern
+storecraft theme switch modern
 ```
 
 ### Install New Themes
 
 ```bash
-myshop theme install minimal
+storecraft theme install minimal
 ```
 
 ### Create Custom Theme
 
 ```bash
-myshop theme create my-custom-theme
+storecraft theme create my-custom-theme
 ```
 
 ## 🔧 CLI Commands
 
-The StoreCraft CLI (`myshop`) provides several commands:
+The StoreCraft CLI (`storecraft`) provides several commands:
 
 | Command | Description |
 |---------|-------------|
-| `myshop create [name]` | Create a new StoreCraft project |
-| `myshop dev` | Start development server |
-| `myshop build` | Build for production |
-| `myshop deploy` | Deploy to hosting platform |
-| `myshop theme list` | List available themes |
-| `myshop theme switch <theme>` | Switch active theme |
-| `myshop theme install <theme>` | Install a new theme |
+| `storecraft create [name]` | Create a new StoreCraft project |
+| `storecraft dev` | Start development server |
+| `storecraft build` | Build for production |
+| `storecraft deploy` | Deploy to hosting platform |
+| `storecraft theme list` | List available themes |
+| `storecraft theme switch <theme>` | Switch active theme |
+| `storecraft theme install <theme>` | Install a new theme |
 
 ## 🏗️ Framework Structure
 
@@ -270,19 +270,19 @@ StoreCraft supports multiple deployment platforms:
 ### Vercel
 
 ```bash
-myshop deploy --platform vercel
+storecraft deploy --platform vercel
 ```
 
 ### Netlify
 
 ```bash
-myshop deploy --platform netlify
+storecraft deploy --platform netlify
 ```
 
 ### Other Platforms
 
 ```bash
-myshop deploy --platform manual
+storecraft deploy --platform manual
 ```
 
 This will show manual deployment instructions for any platform.
@@ -371,7 +371,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Ready to build your next e-commerce experience?**
 
 ```bash
-npx create-myshop@latest my-awesome-store
+npx create-storecraft@latest my-awesome-store
 ```
 
 For more information, visit [storecraft-framework.com](https://storecraft-framework.com)

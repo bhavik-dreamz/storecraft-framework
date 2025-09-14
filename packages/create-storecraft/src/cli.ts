@@ -11,7 +11,7 @@ import { deployProject } from './commands/deploy.js'
 const program = new Command()
 
 program
-  .name('myshop')
+  .name('storecraft')
   .description('StoreCraft CLI - Build modern Shopify headless stores')
   .version('1.0.0')
 
@@ -77,8 +77,8 @@ program
   .option('--env <env>', 'Environment to deploy to')
   .action((options) => deployProject(options))
 
-// Handle create-myshop direct usage
-if (process.argv[1].includes('create-myshop')) {
+// Handle create-storecraft direct usage
+if (process.argv[1].includes('create-storecraft')) {
   const projectName = process.argv[2]
   if (projectName && !projectName.startsWith('-')) {
     createProject(projectName, { template: 'default', yes: false, theme: 'default' })

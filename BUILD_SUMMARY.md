@@ -13,7 +13,7 @@
 - **Next.js Plugin**: `withStoreCraft` for seamless integration
 - **Type System**: Comprehensive TypeScript definitions for Shopify entities
 
-### 2. CLI Tool (`create-myshop`)
+### 2. CLI Tool (`create-storecraft`)
 - **Project Creation**: Full project scaffolding with templates
 - **Theme Management**: Install, switch, list, and create themes
 - **Development Tools**: Dev server, build, and deployment commands
@@ -54,7 +54,7 @@ storecraft-project/
 
 ### Create New Project
 ```bash
-npx create-myshop@latest my-store
+npx create-storecraft@latest my-store
 cd my-store
 npm install
 npm run dev
@@ -62,15 +62,15 @@ npm run dev
 
 ### Theme Management
 ```bash
-myshop theme list           # List themes
-myshop theme switch modern  # Switch theme
-myshop theme create custom  # Create theme
+storecraft theme list           # List themes
+storecraft theme switch modern  # Switch theme
+storecraft theme create custom  # Create theme
 ```
 
 ### Deployment
 ```bash
-myshop build               # Build project
-myshop deploy --platform vercel  # Deploy
+storecraft build               # Build project
+storecraft deploy --platform vercel  # Deploy
 ```
 
 ## 🔧 Technical Features
@@ -135,9 +135,9 @@ To start using StoreCraft Framework:
 
 1. **Test the CLI**:
    ```bash
-   cd packages/create-myshop
+   cd packages/create-storecraft
    npm link
-   create-myshop test-project
+   create-storecraft test-project
    ```
 
 2. **Customize Themes**:
