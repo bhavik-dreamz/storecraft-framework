@@ -1,0 +1,20 @@
+{
+  "name": "Modern Theme",
+  "description": "A sleek, modern theme for StoreCraft",
+  "version": "1.0.0",
+  "author": {
+    "name": "StoreCraft Team",
+    "email": "team@storecraft-framework.com"
+  },
+  "settings": {
+    "colors": {
+      "primary": "#0070f3",
+      "secondary": "#ffffff",
+      "accent": "#f59e0b"
+    },
+    "fonts": {
+      "body": "Inter, system-ui, sans-serif",
+      "heading": "Raleway, system-ui, sans-serif"
+    }
+  }
+}

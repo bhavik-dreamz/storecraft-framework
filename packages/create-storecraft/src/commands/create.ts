@@ -179,7 +179,6 @@ async function createProjectStructure(
       'deploy': 'storecraft deploy'
     },
     dependencies: {
-      'next': '^14.0.0',
       'react': '^18.2.0',
       'react-dom': '^18.2.0',
       'storecraft-framework': '^1.0.0',
@@ -216,10 +215,10 @@ async function createProjectStructure(
       plugins: [{ name: 'next' }],
       baseUrl: '.',
       paths: {
-        '@/*': ['./src/*'],
-        '@/components/*': ['./src/components/*'],
-        '@/lib/*': ['./src/lib/*'],
-        '@/styles/*': ['./src/styles/*']
+        '@/*': ['./*'],
+        '@/components/*': ['./components/*'],
+        '@/lib/*': ['./lib/*'],
+        '@/styles/*': ['./styles/*']
       }
     },
     include: ['next-env.d.ts', '**/*.ts', '**/*.tsx', '.next/types/**/*.ts'],
@@ -306,9 +305,9 @@ STORECRAFT_THEMES_DIR=./themes
   await fs.writeFile(path.join(targetDir, '.env.local'), envContent)
 
   // Create basic app structure
-  await fs.ensureDir(path.join(targetDir, 'src/app'))
-  await fs.ensureDir(path.join(targetDir, 'src/components'))
-  await fs.ensureDir(path.join(targetDir, 'src/lib'))
+  await fs.ensureDir(path.join(targetDir, 'app'))
+  await fs.ensureDir(path.join(targetDir, 'components'))
+  await fs.ensureDir(path.join(targetDir, 'lib'))
   await fs.ensureDir(path.join(targetDir, 'themes', config.theme))
 
   // Create app layout
@@ -341,7 +340,7 @@ export default function RootLayout({
 }
 `.trim()
 
-  await fs.writeFile(path.join(targetDir, 'src/app/layout.tsx'), layoutContent)
+  await fs.writeFile(path.join(targetDir, 'app/layout.tsx'), layoutContent)
 
   // Create home page
   const pageContent = `
@@ -379,7 +378,7 @@ export default function HomePage() {
 }
 `.trim()
 
-  await fs.writeFile(path.join(targetDir, 'src/app/page.tsx'), pageContent)
+  await fs.writeFile(path.join(targetDir, 'app/page.tsx'), pageContent)
 
   // Create global styles
   const stylesContent = `
@@ -417,7 +416,7 @@ body {
 }
 `.trim()
 
-  await fs.writeFile(path.join(targetDir, 'src/app/globals.css'), stylesContent)
+  await fs.writeFile(path.join(targetDir, 'app/globals.css'), stylesContent)
 
   // Create README
   const readmeContent = `
@@ -443,9 +442,10 @@ A modern e-commerce store built with [StoreCraft Framework](https://storecraft-f
 
 ## Project Structure
 
-- \`src/app/\` - Next.js app router pages
-- \`src/components/\` - Custom React components
+- \`app/\` - Next.js app router pages
+- \`components/\` - Custom React components
 - \`themes/\` - StoreCraft themes
+- \`lib/\` - Utility functions and services
 - \`.env.local\` - Environment configuration
 
 ## Available Commands
