@@ -167,11 +167,16 @@ async function createProjectStructure(
     version: '0.1.0',
     private: true,
     scripts: {
-      dev: 'npx --no-install next dev',
-      build: 'npx --no-install next build',
-      start: 'npx --no-install next start',
+      dev: 'storecraft dev',
+      build: 'storecraft build',
+      start: 'storecraft start',
+      serve: 'storecraft serve',
       lint: 'npx --no-install next lint',
-      'type-check': 'tsc --noEmit'
+      'type-check': 'tsc --noEmit',
+      'theme:list': 'storecraft theme list',
+      'theme:switch': 'storecraft theme switch',
+      'theme:create': 'storecraft theme create',
+      'deploy': 'storecraft deploy'
     },
     dependencies: {
       'next': '^14.0.0',
@@ -257,7 +262,29 @@ export default {
   await fs.writeFile(path.join(targetDir, 'store.config.js'), storeConfigContent)
   console.log(`${chalk.green('Created:')} store.config.js`)
 
-  // No longer creating next.config.mjs - StoreCraft will handle Next.js configuration internally
+  // Create Next.js config file
+  const nextConfigContent = `/** @type {import('next').NextConfig} */
+const { default: withStorecraft } = require('storecraft-framework/next-plugin');
+
+// Import your store config
+const storeConfig = require('./store.config');
+
+const nextConfig = {
+  // Your Next.js configuration options here
+  reactStrictMode: true,
+  swcMinify: true
+};
+
+module.exports = withStorecraft({
+  // StoreCraft configuration options
+  configPath: './store.config.js',
+  themesPath: './themes',
+  devMode: process.env.NODE_ENV === 'development'
+})(nextConfig);
+`;
+
+  await fs.writeFile(path.join(targetDir, 'next.config.js'), nextConfigContent)
+  console.log(`${chalk.green('Created:')} next.config.js`)
 
   // Create environment file
   const envContent = `
@@ -423,11 +450,21 @@ A modern e-commerce store built with [StoreCraft Framework](https://storecraft-f
 
 ## Available Commands
 
+### Development Commands
 - \`npm run dev\` - Start development server
 - \`npm run build\` - Build for production
 - \`npm run start\` - Start production server
-- \`myshop theme list\` - List available themes
-- \`myshop theme switch <theme>\` - Switch themes
+- \`npm run serve\` - Serve static export
+
+### Theme Management
+- \`npm run theme:list\` - List all available themes
+- \`npm run theme:switch <theme-name>\` - Switch to a different theme
+- \`npm run theme:create <theme-name>\` - Create a new theme
+
+### Other Commands
+- \`npm run deploy\` - Deploy your store
+- \`npm run lint\` - Lint your code
+- \`npm run type-check\` - Check TypeScript types
 
 ## Learn More
 
