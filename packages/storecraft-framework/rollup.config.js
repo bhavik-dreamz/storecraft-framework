@@ -1,21 +1,17 @@
-import typescript from '@rollup/plugin-typescript';
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import json from '@rollup/plugin-json';
-import { readFileSync } from 'fs';
+const typescript = require('@rollup/plugin-typescript');
+const resolve = require('@rollup/plugin-node-resolve');
+const commonjs = require('@rollup/plugin-commonjs');
+const json = require('@rollup/plugin-json');
+const fs = require('fs');
 
-const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
+const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
-export default [
+module.exports = [
   {
     input: 'src/index.ts',
     output: [
       {
         file: 'dist/index.js',
-        format: 'es'
-      },
-      {
-        file: 'dist/index.cjs',
         format: 'cjs',
         exports: 'named'
       }

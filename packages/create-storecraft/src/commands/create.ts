@@ -10,7 +10,7 @@ interface CreateOptions {
   theme?: string
 }
 
-function validatePackageName(name: string): boolean {
+function validName(name: string): boolean {
   // Basic validation for package names
   if (!name || name.length === 0) return false
   if (name.startsWith('.') || name.startsWith('_')) return false
@@ -30,9 +30,9 @@ export async function createProject(projectName: string | undefined, options: Cr
           name: 'projectName',
           message: 'What is your project name?',
           default: 'my-storecraft-shop',
-          validate: (input: string) => {
-            if (!validatePackageName(input)) {
-              return 'Please enter a valid package name (lowercase letters, numbers, hyphens, and underscores only)'
+          validate: (input) => {
+            if (!validName(input)) {
+              return 'Invalid project name. Use lowercase letters, numbers, and hyphens only.'
             }
             return true
           }
@@ -167,10 +167,10 @@ async function createProjectStructure(
     version: '0.1.0',
     private: true,
     scripts: {
-      dev: 'next dev',
-      build: 'next build',
-      start: 'next start',
-      lint: 'next lint',
+      dev: 'npx --no-install next dev',
+      build: 'npx --no-install next build',
+      start: 'npx --no-install next start',
+      lint: 'npx --no-install next lint',
       'type-check': 'tsc --noEmit'
     },
     dependencies: {
@@ -225,27 +225,39 @@ async function createProjectStructure(
 
   // Create Next.js config
   const nextConfig = `
-import { withStoreCraft, createStoreCraftConfig } from 'storecraft-framework/next-plugin'
+import withStorecraft from 'storecraft-framework/next-plugin'
 
-const storeCraftConfig = createStoreCraftConfig({
-  activeTheme: '${config.theme}',
-  shopify: {
-    domain: process.env.SHOPIFY_DOMAIN || '${config.shopifyDomain}',
-    storefrontAccessToken: process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || '${config.storefrontToken}',
-  },
-  features: {
-    ${config.features?.map((f: string) => `${f}: true`).join(',\n    ') || 'cart: true, auth: true, search: true'}
-  }
-})
+/** @type {import('next').NextConfig} */
+const baseConfig = {
+  reactStrictMode: true,
+}
 
-export default withStoreCraft({
-  experimental: {
-    appDir: true,
-  },
-}, { config: storeCraftConfig })
+export default withStorecraft({
+  themesPath: './themes',
+})(baseConfig)
 `
 
-  await fs.writeFile(path.join(targetDir, 'next.config.js'), nextConfig)
+  // Create store.config.js
+  const defaultTheme = 'default';
+  const shopifyDomain = config.shopifyDomain || '';
+  const storefrontToken = config.storefrontToken || '';
+  
+  const storeConfigContent = `
+// StoreCraft Configuration
+export default {
+  activeTheme: process.env.STORECRAFT_ACTIVE_THEME || '${defaultTheme}',
+  shopify: {
+    domain: process.env.SHOPIFY_DOMAIN || '${shopifyDomain}',
+    storefrontAccessToken: process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || '${storefrontToken}',
+    adminAccessToken: process.env.SHOPIFY_ADMIN_ACCESS_TOKEN || '',
+  }
+}
+`.trim()
+
+  await fs.writeFile(path.join(targetDir, 'store.config.js'), storeConfigContent)
+  console.log(`${chalk.green('Created:')} store.config.js`)
+
+  // No longer creating next.config.mjs - StoreCraft will handle Next.js configuration internally
 
   // Create environment file
   const envContent = `
@@ -467,4 +479,80 @@ next-env.d.ts
 `.trim()
 
   await fs.writeFile(path.join(targetDir, '.gitignore'), gitignoreContent)
+  
+  // Set up themes directory structure
+  const themeSpinner = ora('Setting up theme structure...').start()
+  
+  // Create themes directory
+  await fs.ensureDir(path.join(targetDir, 'themes'))
+  
+  // Create default theme
+  await fs.ensureDir(path.join(targetDir, 'themes/default'))
+  
+  // Create theme.json
+  const themeConfig = {
+    name: "Default Theme",
+    description: "Default StoreCraft theme",
+    version: "1.0.0",
+    author: {
+      name: "StoreCraft Team",
+      email: "team@storecraft-framework.com"
+    },
+    settings: {
+      colors: {
+        primary: "#000000",
+        secondary: "#333333",
+        accent: "#0070f3"
+      },
+      fonts: {
+        body: "system-ui, sans-serif",
+        heading: "system-ui, sans-serif"
+      }
+    }
+  }
+  
+  await fs.writeFile(
+    path.join(targetDir, 'themes/default/theme.json'),
+    JSON.stringify(themeConfig, null, 2)
+  )
+  
+  // Create theme components directory
+  await fs.ensureDir(path.join(targetDir, 'themes/default/components'))
+  
+  // Create theme pages directory
+  await fs.ensureDir(path.join(targetDir, 'themes/default/pages'))
+  
+  // Create a basic Home page for the theme
+  const homePageContent = `import React from 'react';
+import { Link } from 'storecraft-framework/components';
+
+export default function HomePage() {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center py-16">
+      <div className="w-full max-w-5xl px-6">
+        <h1 className="text-center text-4xl font-bold tracking-tight sm:text-6xl">
+          Welcome to StoreCraft
+        </h1>
+        <p className="mt-6 text-center text-lg text-gray-600">
+          Your modern Shopify headless storefront is ready.
+        </p>
+        <div className="mt-10 flex items-center justify-center gap-x-6">
+          <Link 
+            href="/products" 
+            className="rounded-md bg-black px-6 py-3 text-lg font-semibold text-white shadow-sm hover:bg-gray-800"
+          >
+            Explore Products
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}`
+  
+  await fs.writeFile(
+    path.join(targetDir, 'themes/default/pages/Home.tsx'),
+    homePageContent
+  )
+  
+  themeSpinner.succeed('Theme structure created')
 }

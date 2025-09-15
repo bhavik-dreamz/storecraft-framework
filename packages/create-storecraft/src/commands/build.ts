@@ -47,6 +47,26 @@ export async function buildProject(options: BuildOptions) {
 }
 
 async function runBuild(options: BuildOptions): Promise<void> {
+  // Make sure the next.config.mjs exists before building
+  try {
+    await fs.access(path.join(process.cwd(), 'next.config.mjs'))
+  } catch {
+    console.log(chalk.yellow('Creating default Next.js configuration for build...'))
+    const defaultConfig = `
+import withStorecraft from 'storecraft-framework/next-plugin';
+
+/** @type {import('next').NextConfig} */
+const baseConfig = {
+  reactStrictMode: true,
+};
+
+export default withStorecraft({
+  themesPath: './themes',
+})(baseConfig);
+    `.trim()
+    await fs.writeFile(path.join(process.cwd(), 'next.config.mjs'), defaultConfig)
+  }
+  
   return new Promise((resolve, reject) => {
     const args = ['run', 'build']
 

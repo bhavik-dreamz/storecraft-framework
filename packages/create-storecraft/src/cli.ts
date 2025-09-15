@@ -68,6 +68,23 @@ program
   .option('--standalone', 'Create standalone build')
   .action((options) => buildProject(options))
 
+// Start command for production
+program
+  .command('start')
+  .description('Start production server')
+  .option('-p, --port <port>', 'Port to run on', '3000')
+  .option('-H, --host <host>', 'Host to bind to', 'localhost')
+  .action((options) => {
+    const startOptions = {
+      port: options.port ? parseInt(options.port) : 3000,
+      host: options.host
+    }
+    // Use spawnSync to run Next.js start command
+    const { spawn } = require('child_process')
+    console.log(chalk.blue('Starting StoreCraft production server...'))
+    spawn('npx', ['next', 'start', '-p', startOptions.port.toString()], { stdio: 'inherit' })
+  })
+
 // Deploy commands
 program
   .command('deploy')

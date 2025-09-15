@@ -41,6 +41,8 @@ async function installDependencies(): Promise<void> {
 
 export async function startDevServer(options: DevOptions) {
   try {
+    const spinner = ora('Starting StoreCraft development server...').start();
+    
     // Load environment variables from common Next.js locations
     const envPaths = [
       '.env.local',
@@ -79,7 +81,35 @@ export async function startDevServer(options: DevOptions) {
     // Start StoreCraft development process
     console.log(chalk.blue('🔨 Initializing StoreCraft Framework...'))
     
-    // Use node with explicit ESM flags for Next.js
+    // Check for store.config.js or create one if it doesn't exist
+    try {
+      await fs.access(join(process.cwd(), 'store.config.js'))
+    } catch {
+      console.log(chalk.yellow('Creating default store.config.js...'))
+      const defaultConfig = `
+// StoreCraft Configuration
+export default {
+  activeTheme: process.env.STORECRAFT_ACTIVE_THEME || 'default',
+  shopify: {
+    domain: process.env.SHOPIFY_DOMAIN || '',
+    storefrontAccessToken: process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || '',
+  }
+}
+      `.trim()
+      await fs.writeFile(join(process.cwd(), 'store.config.js'), defaultConfig)
+      console.log(chalk.green('✓ Created store.config.js'))
+    }
+
+    // Skip creating next.config.mjs since the framework handles Next.js configuration internally
+    console.log(chalk.blue('✓ Using StoreCraft internal configuration'))
+    
+    console.log(chalk.green('🚀 Initializing StoreCraft services...\n'))
+    spinner.succeed('StoreCraft ready!')
+    
+    // Use node with explicit ESM flags for Next.js, but abstract it from users
+    console.log(chalk.blue('\n📦 Starting development server...\n'))
+    
+    // Use internal Next.js configuration from StoreCraft
     const nextProcess = spawn('npx', ['--node-options=--experimental-import-meta-resolve', 'next', 'dev', '--port', port.toString()], {
       stdio: ['inherit', 'pipe', 'pipe'],
       cwd: process.cwd(),
@@ -87,12 +117,11 @@ export async function startDevServer(options: DevOptions) {
         ...process.env,
         FORCE_COLOR: '1',
         STORECRAFT_MODE: 'development',
-        NODE_OPTIONS: '--experimental-vm-modules --experimental-import-meta-resolve'
+        NODE_OPTIONS: '--experimental-vm-modules --experimental-import-meta-resolve',
+        // Use internal Next.js config from the framework
+        NEXT_CONFIG_INTERNAL: 'true'
       }
     })
-
-    // Initialize StoreCraft Framework
-    console.log(chalk.green('🚀 Initializing StoreCraft services...\n'))
     
     // Initialize theme and services directly
     try {
@@ -109,19 +138,37 @@ export async function startDevServer(options: DevOptions) {
       process.exit(1)
     }
 
-    // Handle Next.js output
+    // Handle Next.js output but rebrand it as StoreCraft
     nextProcess.stdout?.on('data', (data: Buffer) => {
       const output = data.toString()
+      
+      // Filter and transform Next.js output
       if (output.includes('ready')) {
-        console.log(chalk.green('✨ Next.js ready'))
+        console.log(chalk.green('✨ StoreCraft development server ready'))
         console.log(chalk.blue('\n🌐 App running at:'), chalk.cyan(`http://${host}:${port}`))
+        console.log(chalk.blue('\n📱 Use the StoreCraft dashboard at:'), chalk.cyan(`http://${host}:${port}/admin`))
+      } else if (!output.includes('webpack') && !output.includes('Compiled')) {
+        // Show useful output but hide Next.js implementation details
+        const filteredOutput = output
+          .replace(/next/gi, 'StoreCraft')
+          .replace(/NextJS/gi, 'StoreCraft')
+          .replace(/webpack/gi, 'builder')
+        
+        if (filteredOutput.trim()) {
+          process.stdout.write(filteredOutput)
+        }
       }
     })
 
     nextProcess.stderr?.on('data', (data: Buffer) => {
       const errorOutput = data.toString()
       if (!errorOutput.includes('warning')) {
-        console.error(chalk.red('Next.js error:'), errorOutput)
+        // Rebrand errors to avoid exposing Next.js
+        const filteredError = errorOutput
+          .replace(/next/gi, 'StoreCraft')
+          .replace(/NextJS/gi, 'StoreCraft')
+          
+        console.error(chalk.red('StoreCraft error:'), filteredError)
       }
     })
 

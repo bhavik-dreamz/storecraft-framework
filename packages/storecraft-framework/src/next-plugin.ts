@@ -12,11 +12,14 @@ export default function withStorecraft(
   storecraftConfig: StorecraftConfig = {}
 ) {
   return (nextConfig: NextConfig = {}): ExtendedNextConfig => {
+    // If running in internal mode, use default configuration
+    const internalMode = process.env.NEXT_CONFIG_INTERNAL === 'true';
+    
     const {
       configPath = './store.config.js',
       themesPath = './themes',
       devMode = process.env.NODE_ENV === 'development'
-    } = storecraftConfig;
+    } = internalMode ? { configPath: './store.config.js', themesPath: './themes', devMode: process.env.NODE_ENV === 'development' } : storecraftConfig;
 
     // Load store configuration
     const storeConfig = loadStoreConfig(configPath);
