@@ -2,10 +2,14 @@
   "name": "storecraft-framework",
   "version": "1.0.0",
   "description": "Theme-based framework for building Shopify headless storefronts with Next.js",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
     "./next-plugin": "./dist/next-plugin.js",
     "./types": "./dist/types/index.d.ts",
     "./providers": "./dist/providers/index.js",
@@ -53,9 +57,11 @@
     "react-dom": ">=18.0.0"
   },
   "dependencies": {
+    "@types/express": "^5.0.3",
     "chokidar": "^3.5.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "express": "^5.1.0",
     "graphql-request": "^7.0.0",
     "tailwind-merge": "^2.0.0",
     "zustand": "^4.4.0"

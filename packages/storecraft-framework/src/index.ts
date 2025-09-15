@@ -1,4 +1,5 @@
 // Main Framework Exports
+export { initializeStoreCraft } from './initialize';
 
 // Providers
 export { RootProvider } from './providers/RootProvider';

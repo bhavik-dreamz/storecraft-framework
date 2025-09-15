@@ -1,0 +1,50 @@
+{
+  "name": "default",
+  "version": "1.0.0",
+  "description": "Default StoreCraft theme",
+  "components": {
+    "Header": {
+      "path": "./components/Header",
+      "props": {
+        "logo": "/logo.png",
+        "navigation": [
+          { "label": "Home", "path": "/" },
+          { "label": "Shop", "path": "/shop" },
+          { "label": "Cart", "path": "/cart" }
+        ]
+      }
+    },
+    "Footer": {
+      "path": "./components/Footer",
+      "props": {
+        "copyright": "© 2025 StoreCraft. All rights reserved."
+      }
+    },
+    "ProductGrid": {
+      "path": "./components/ProductGrid",
+      "props": {
+        "columns": 3,
+        "gap": 4
+      }
+    }
+  },
+  "layouts": {
+    "default": {
+      "path": "./layouts/default"
+    }
+  },
+  "pages": {
+    "home": {
+      "path": "/",
+      "component": "./pages/Home"
+    },
+    "product": {
+      "path": "/products/:handle",
+      "component": "./pages/Product"
+    },
+    "cart": {
+      "path": "/cart",
+      "component": "./pages/Cart"
+    }
+  }
+}
