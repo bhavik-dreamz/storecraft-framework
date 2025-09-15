@@ -7,6 +7,7 @@ import { ThemeResolver } from './lib/theme/resolver';
 import { generateThemeRewrites, generateThemeHeaders } from './lib/next/route-generator';
 import { setupThemeWatcher, setupDevelopmentWebpack } from './lib/next/theme-watcher';
 import { ThemeResolverPlugin } from './lib/next/theme-resolver-plugin';
+import { resolveTheme } from '../scripts/resolve-theme';
 
 export default function withStorecraft(
   storecraftConfig: StorecraftConfig = {}
@@ -15,14 +16,19 @@ export default function withStorecraft(
     // If running in internal mode, use default configuration
     const internalMode = process.env.NEXT_CONFIG_INTERNAL === 'true';
     
+    const rootDir = process.cwd();
+    console.log('🚀 StoreCraft initializing from:', rootDir);
+    
+    // Resolve theme first - this will copy theme files to internal app directory
+    const storeConfig = resolveTheme(rootDir);
+    
     const {
-      configPath = './store.config.js',
+      configPath = './storecraft.config.json',
       themesPath = './themes',
       devMode = process.env.NODE_ENV === 'development'
-    } = internalMode ? { configPath: './store.config.js', themesPath: './themes', devMode: process.env.NODE_ENV === 'development' } : storecraftConfig;
+    } = internalMode ? { configPath: './storecraft.config.json', themesPath: './themes', devMode: process.env.NODE_ENV === 'development' } : storecraftConfig;
 
-    // Load store configuration
-    const storeConfig = loadStoreConfig(configPath);
+    // Setup theme resolver for runtime operations (API routes, etc)
     const resolver = new ThemeResolver(
       path.resolve(themesPath),
       storeConfig.activeTheme,
