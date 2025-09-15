@@ -298,6 +298,12 @@ export interface RouteDefinition {
   path: string
   component: RouteComponent
   children?: RouteDefinition[]
+  metadata?: {
+    title?: string
+    description?: string
+    keywords?: string[]
+    openGraph?: Record<string, string>
+  }
 }
 
 // Plugin Types  

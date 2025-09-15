@@ -1,0 +1,34 @@
+{
+  "name": "Default",
+  "version": "1.0.0",
+  "description": "Clean and modern default theme for StoreCraft",
+  "author": {
+    "name": "StoreCraft Team",
+    "email": "themes@storecraft.com",
+    "url": "https://storecraft.com"
+  },
+  "preview": {
+    "thumbnail": "/themes/default/preview.jpg"
+  },
+  "settings": {
+    "colors": {
+      "primary": "#3B82F6",
+      "secondary": "#6B7280",
+      "accent": "#F59E0B"
+    },
+    "typography": {
+      "fontFamily": "Inter, system-ui, sans-serif",
+      "headingFont": "Inter, system-ui, sans-serif"
+    },
+    "layout": {
+      "containerWidth": "1200px",
+      "borderRadius": "8px"
+    }
+  },
+  "features": [
+    "responsive-design",
+    "dark-mode-ready",
+    "accessibility",
+    "seo-optimized"
+  ]
+}

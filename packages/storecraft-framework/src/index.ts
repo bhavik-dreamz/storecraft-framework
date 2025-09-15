@@ -1,67 +1,80 @@
 // Main Framework Exports
 
+// Providers
+export { RootProvider } from './providers/RootProvider';
+export { CartProvider, useCart } from './providers/CartProvider';
+export { AuthProvider, useAuth } from './providers/AuthProvider';
+export { ThemeProvider, useTheme } from './providers/ThemeProvider';
+
+// Core Routes
+export { HomePage } from './routes/HomePage';
+export { ProductPage } from './routes/ProductPage';
+export { CollectionPage } from './routes/CollectionPage';
+
+// Core Components
+export { ProductGrid } from './components/ProductGrid';
+
+// Shopify API
+export { getShopifyClient } from './lib/shopify/client';
+export { getShopifyAPI, shopifyApi } from './lib/shopify/api';
+export { useProduct, useProducts, useCollection, useCollections, useCustomer } from './lib/shopify/hooks';
+
 // Types
-export * from './types/shopify'
+export * from './types/shopify';
 export type {
   ThemeConfig,
   ThemeSettings,
   StorecraftConfig,
   ComponentOverride,
   ThemeContextValue,
-  FrameworkContextValue
-} from './types/theme'
+  FrameworkContextValue,
+  ThemeManifest
+} from './types/theme';
 
-// Providers  
+// Configuration Types
+export type {
+  StoreConfigSchema,
+  RuntimeConfig,
+  StorecraftConfig as StorecraftPluginConfig,
+  ExtendedNextConfig
+} from './lib/config/types';
+
+// Utilities
+export { cn } from './utils/cn';
+export { formatPrice, formatDate } from './utils/formatters';
+
+// Theme System
+export * from './lib/theme';
+
+// Router System
+export type { StorecraftRouter, RouteConfig, RouterConfig } from './lib/router';
 export {
-  RootProvider,
-  CartProvider,
-  AuthProvider,
-  ThemeProvider as ThemeProviderComponent,
-  useCart,
-  useAuth,
-  useTheme
-} from './providers'
+  createStorecraftRouter,
+  routeUtils,
+  useStorecraftRouter,
+  defaultRoutes
+} from './lib/router';
 
-// Components
+// Additional Components (for compatibility)
 export {
   ProductCard,
-  ProductGrid,
   CollectionGrid,
   Cart as CartComponent,
   Header,
   Footer
-} from './components'
+} from './components';
 
-// Core Routes
-export { HomePage } from './routes/HomePage'
-export { ProductPage } from './routes/ProductPage'
-export { CollectionPage } from './routes/CollectionPage'
-export { ProductDetailPage } from './routes/ProductDetailPage'
-export { LoginPage } from './routes/LoginPage'
-export { AccountPage } from './routes/AccountPage'
-export { AdminDashboard } from './routes/AdminDashboard'
-export { AdminOrderDetail } from './routes/AdminOrderDetail'
-export { CartPage } from './routes/CartPage'
+// Additional Routes (for compatibility)
+export { ProductDetailPage } from './routes/ProductDetailPage';
+export { LoginPage } from './routes/LoginPage';
+export { AccountPage } from './routes/AccountPage';
+export { AdminDashboard } from './routes/AdminDashboard';
+export { AdminOrderDetail } from './routes/AdminOrderDetail';
+export { CartPage } from './routes/CartPage';
 
-// Theme System
-export * from './lib/theme'
-
-// Shopify Integration
-export * from './lib/shopify'
-
-// Utilities
-export { cn } from './utils/cn'
-export { formatPrice, formatDate } from './utils/formatters'
-
-// Router System
-export { 
-  StorecraftRouter, 
-  storecraftRouter, 
-  routeUtils, 
-  useStorecraftRouter,
-  defaultRoutes
-} from './lib/router'
-export type { RouteConfig, RouterConfig } from './lib/router'
+// Next.js Plugin
+export { default as withStorecraft } from './next-plugin';
+export { StoreCraftApp, withStoreCraft } from './lib/next/app-integration';
 
 // Version
-export const VERSION = '1.0.0'
+export const VERSION = '1.0.0';

@@ -297,6 +297,14 @@ export interface CustomerLoginResult {
   customer: Customer
 }
 
+export interface CustomerCreateInput {
+  email: string
+  password: string
+  firstName?: string
+  lastName?: string
+  acceptsMarketing?: boolean
+}
+
 // Error Types
 export interface UserError {
   field?: string[]

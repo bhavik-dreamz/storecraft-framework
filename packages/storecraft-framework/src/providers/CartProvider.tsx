@@ -1,192 +1,165 @@
-import React, { createContext, useContext, useReducer, useCallback, useEffect } from 'react'
-import { Cart, CartLine, CartLineInput, CartLineUpdateInput } from '../types/shopify'
+'use client';
+
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { Cart, CartLine, UseCartReturn, StoreConfig } from '../types';
+import { getShopifyAPI } from '../lib/shopify/api';
 
 interface CartState {
-  cart: Cart | null
-  isLoading: boolean
-  error: string | null
+  cart: Cart | null;
+  isLoading: boolean;
+  error: string | null;
 }
 
-type CartAction =
-  | { type: 'SET_LOADING'; payload: boolean }
+type CartAction = 
   | { type: 'SET_CART'; payload: Cart }
-  | { type: 'SET_ERROR'; payload: string }
-  | { type: 'CLEAR_ERROR' }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'CLEAR_CART' }
+  | { type: 'UPDATE_LINE'; payload: { lineId: string; quantity: number } }
+  | { type: 'REMOVE_LINE'; payload: string };
 
-interface CartContextValue extends CartState {
-  addItem: (variantId: string, quantity: number, attributes?: Array<{ key: string; value: string }>) => Promise<void>
-  removeItem: (lineId: string) => Promise<void>
-  updateItem: (lineId: string, quantity: number) => Promise<void>
-  clearCart: () => Promise<void>
-  refreshCart: () => Promise<void>
-}
-
-const CartContext = createContext<CartContextValue | undefined>(undefined)
-
-function cartReducer(state: CartState, action: CartAction): CartState {
+const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
-    case 'SET_LOADING':
-      return { ...state, isLoading: action.payload }
     case 'SET_CART':
-      return { ...state, cart: action.payload, isLoading: false, error: null }
+      return { ...state, cart: action.payload, isLoading: false, error: null };
+    case 'SET_LOADING':
+      return { ...state, isLoading: action.payload };
     case 'SET_ERROR':
-      return { ...state, error: action.payload, isLoading: false }
-    case 'CLEAR_ERROR':
-      return { ...state, error: null }
+      return { ...state, error: action.payload, isLoading: false };
     case 'CLEAR_CART':
-      return { ...state, cart: null, error: null }
+      return { ...state, cart: null };
+    case 'UPDATE_LINE':
+      if (!state.cart) return state;
+      const updatedLines = state.cart.lines.map(line => 
+        line.id === action.payload.lineId 
+          ? { ...line, quantity: action.payload.quantity }
+          : line
+      );
+      return {
+        ...state,
+        cart: { ...state.cart, lines: updatedLines }
+      };
+    case 'REMOVE_LINE':
+      if (!state.cart) return state;
+      const filteredLines = state.cart.lines.filter(line => line.id !== action.payload);
+      return {
+        ...state,
+        cart: { ...state.cart, lines: filteredLines }
+      };
     default:
-      return state
+      return state;
   }
-}
+};
 
-interface CartProviderProps {
-  children: React.ReactNode
-  initialCart?: Cart | null
-}
+const CartContext = createContext<UseCartReturn | null>(null);
 
-export function CartProvider({ children, initialCart = null }: CartProviderProps) {
+export const CartProvider: React.FC<{ children: React.ReactNode; config?: StoreConfig }> = ({ children, config }) => {
   const [state, dispatch] = useReducer(cartReducer, {
-    cart: initialCart,
+    cart: null,
     isLoading: false,
-    error: null,
-  })
+    error: null
+  });
+
+  const shopifyAPI = config ? getShopifyAPI(config) : null;
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const loadStoredCart = async () => {
-      if (typeof window === 'undefined') return
-
+    const loadCart = async () => {
       try {
-        const storedCartId = localStorage.getItem('storecraft_cart_id')
-        if (storedCartId && !state.cart) {
-          dispatch({ type: 'SET_LOADING', payload: true })
-          // TODO: Load cart from Shopify API using storedCartId
-          // For now, just clear the loading state
-          dispatch({ type: 'SET_LOADING', payload: false })
+        dispatch({ type: 'SET_LOADING', payload: true });
+        const cartId = localStorage.getItem('storecraft-cart-id');
+        
+        if (cartId && shopifyAPI) {
+          const cart = await shopifyAPI.getCart(cartId);
+          dispatch({ type: 'SET_CART', payload: cart });
         }
       } catch (error) {
-        console.error('Failed to load stored cart:', error)
-        dispatch({ type: 'SET_ERROR', payload: 'Failed to load cart' })
+        dispatch({ type: 'SET_ERROR', payload: 'Failed to load cart' });
       }
-    }
+    };
 
-    loadStoredCart()
-  }, [])
+    loadCart();
+  }, []);
 
-  // Save cart ID to localStorage when cart changes
-  useEffect(() => {
-    if (typeof window !== 'undefined' && state.cart?.id) {
-      localStorage.setItem('storecraft_cart_id', state.cart.id)
-    }
-  }, [state.cart?.id])
-
-  const addItem = useCallback(
-    async (variantId: string, quantity: number, attributes?: Array<{ key: string; value: string }>) => {
-      dispatch({ type: 'SET_LOADING', payload: true })
-      dispatch({ type: 'CLEAR_ERROR' })
-
-      try {
-        // TODO: Implement Shopify API call
-        const cartInput: CartLineInput = {
-          merchandiseId: variantId,
-          quantity,
-          attributes,
-        }
-
-        // Placeholder - replace with actual Shopify API call
-        console.log('Adding item to cart:', cartInput)
-        
-        // For now, just clear loading
-        dispatch({ type: 'SET_LOADING', payload: false })
-      } catch (error) {
-        dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to add item' })
-      }
-    },
-    [state.cart]
-  )
-
-  const removeItem = useCallback(
-    async (lineId: string) => {
-      dispatch({ type: 'SET_LOADING', payload: true })
-      dispatch({ type: 'CLEAR_ERROR' })
-
-      try {
-        // TODO: Implement Shopify API call
-        console.log('Removing item from cart:', lineId)
-        
-        dispatch({ type: 'SET_LOADING', payload: false })
-      } catch (error) {
-        dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to remove item' })
-      }
-    },
-    [state.cart]
-  )
-
-  const updateItem = useCallback(
-    async (lineId: string, quantity: number) => {
-      dispatch({ type: 'SET_LOADING', payload: true })
-      dispatch({ type: 'CLEAR_ERROR' })
-
-      try {
-        // TODO: Implement Shopify API call
-        console.log('Updating cart item:', { lineId, quantity })
-        
-        dispatch({ type: 'SET_LOADING', payload: false })
-      } catch (error) {
-        dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to update item' })
-      }
-    },
-    [state.cart]
-  )
-
-  const clearCart = useCallback(async () => {
-    dispatch({ type: 'SET_LOADING', payload: true })
-    dispatch({ type: 'CLEAR_ERROR' })
-
+  const addItem = async (variantId: string, quantity: number = 1) => {
     try {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('storecraft_cart_id')
-      }
-      dispatch({ type: 'CLEAR_CART' })
-    } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to clear cart' })
-    }
-  }, [])
-
-  const refreshCart = useCallback(async () => {
-    if (!state.cart?.id) return
-
-    dispatch({ type: 'SET_LOADING', payload: true })
-    dispatch({ type: 'CLEAR_ERROR' })
-
-    try {
-      // TODO: Implement Shopify API call to refresh cart
-      console.log('Refreshing cart:', state.cart.id)
+      dispatch({ type: 'SET_LOADING', payload: true });
       
-      dispatch({ type: 'SET_LOADING', payload: false })
+      if (!shopifyAPI) throw new Error('Shopify API not initialized');
+      let cartId = state.cart?.id;
+      
+      if (!cartId) {
+        // Create new cart
+        const newCart = await shopifyAPI.createCart([]);
+        const updatedCart = await shopifyAPI.addToCart(newCart.id, [
+          { merchandiseId: variantId, quantity }
+        ]);
+        localStorage.setItem('storecraft-cart-id', updatedCart.id);
+        dispatch({ type: 'SET_CART', payload: updatedCart });
+      } else {
+        // Add to existing cart
+        const updatedCart = await shopifyAPI.addToCart(cartId, [
+          { merchandiseId: variantId, quantity }
+        ]);
+        dispatch({ type: 'SET_CART', payload: updatedCart });
+      }
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to refresh cart' })
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to add item to cart' });
     }
-  }, [state.cart?.id])
+  };
 
-  const value: CartContextValue = {
-    ...state,
-    addItem,
-    removeItem,
-    updateItem,
-    clearCart,
-    refreshCart,
+  const removeItem = async (lineId: string) => {
+    if (!state.cart) return;
+    
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      if (!shopifyAPI) throw new Error('Shopify API not initialized');
+      const updatedCart = await shopifyAPI.removeFromCart(state.cart.id, [lineId]);
+      dispatch({ type: 'SET_CART', payload: updatedCart });
+    } catch (error) {
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to remove item from cart' });
+    }
+  };
+
+  const updateItem = async (lineId: string, quantity: number) => {
+    if (!state.cart) return;
+    
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      if (!shopifyAPI) throw new Error('Shopify API not initialized');
+      const updatedCart = await shopifyAPI.updateCartLines(state.cart.id, [
+        { id: lineId, quantity }
+      ]);
+      dispatch({ type: 'SET_CART', payload: updatedCart });
+    } catch (error) {
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to update item quantity' });
+    }
+  };
+
+  const clearCart = async () => {
+    localStorage.removeItem('storecraft-cart-id');
+    dispatch({ type: 'CLEAR_CART' });
+  };
+
+  return (
+    <CartContext.Provider value={{
+      cart: state.cart,
+      addItem,
+      removeItem,
+      updateItem,
+      clearCart,
+      isLoading: state.isLoading,
+      error: state.error
+    }}>
+      {children}
+    </CartContext.Provider>
+  );
+};
+
+export const useCart = (): UseCartReturn => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
   }
-
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
-}
-
-export function useCart(): CartContextValue {
-  const context = useContext(CartContext)
-  if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider')
-  }
-  return context
-}
+  return context;
+};

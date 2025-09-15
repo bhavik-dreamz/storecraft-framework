@@ -22,16 +22,22 @@ module.exports = [
       ...Object.keys(pkg.peerDependencies || {}),
       ...Object.keys(pkg.dependencies || {}),
       'react',
-      'react-dom'
+      'react-dom',
+      'fs',
+      'path',
+      'chokidar'
     ],
     plugins: [
-      resolve(),
+      resolve({
+        preferBuiltins: true
+      }),
       commonjs(),
       json(),
       typescript({
         tsconfig: './tsconfig.json',
         declaration: true,
-        outDir: 'dist'
+        outDir: 'dist',
+        exclude: ['**/*.test.ts', '**/*.test.tsx']
       })
     ]
   },
@@ -45,14 +51,19 @@ module.exports = [
     external: [
       ...Object.keys(pkg.peerDependencies || {}),
       'fs',
-      'path'
+      'path',
+      'chokidar'
     ],
     plugins: [
-      resolve(),
+      resolve({
+        preferBuiltins: true
+      }),
       commonjs(),
       json(),
       typescript({
-        tsconfig: './tsconfig.json'
+        tsconfig: './tsconfig.json',
+        declaration: true,
+        outDir: 'dist'
       })
     ]
   }
